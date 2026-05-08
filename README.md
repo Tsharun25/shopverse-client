@@ -106,8 +106,30 @@ Password: 123456
 
 # 📸 Screenshots
 
-Add screenshots here later.
 
+### Home Page
+![Home](./public/screenshots/home.png)
+
+### Products
+![Products](./public/screenshots/products.png)
+
+### Products
+![Product Details](./public/screenshots/productDetails.png)
+
+### Products
+![Cart](./public/screenshots/cart.png)
+
+### Products
+![Checkout](./public/screenshots/checkout.png)
+
+### Products
+![User Dashboard](./public/screenshots/userdashboard.png)
+
+### Products
+![Admin dashboard](./public/screenshots/AdminDashboard.png)
+
+### Products
+![Orders page](./public/screenshots/orders.png)
 ---
 
 # 👨‍💻 Developer

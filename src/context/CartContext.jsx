@@ -6,10 +6,6 @@ const CartContext = createContext(null);
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("shopverse_cart");
-    const clearCart = () => {
-      setCartItems([]);
-    };
-
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
@@ -24,21 +20,12 @@ export function CartProvider({ children }) {
       setCartItems((prev) =>
         prev.map((item) =>
           item._id === product._id
-            ? {
-                ...item,
-                quantity: item.quantity + 1,
-              }
-            : item,
-        ),
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
       );
     } else {
-      setCartItems((prev) => [
-        ...prev,
-        {
-          ...product,
-          quantity: 1,
-        },
-      ]);
+      setCartItems((prev) => [...prev, { ...product, quantity: 1 }]);
     }
 
     toast.success("Added to cart");
@@ -46,20 +33,14 @@ export function CartProvider({ children }) {
 
   const removeFromCart = (id) => {
     setCartItems((prev) => prev.filter((item) => item._id !== id));
-
     toast.success("Removed from cart");
   };
 
   const increaseQuantity = (id) => {
     setCartItems((prev) =>
       prev.map((item) =>
-        item._id === id
-          ? {
-              ...item,
-              quantity: item.quantity + 1,
-            }
-          : item,
-      ),
+        item._id === id ? { ...item, quantity: item.quantity + 1 } : item
+      )
     );
   };
 
@@ -67,18 +48,20 @@ export function CartProvider({ children }) {
     setCartItems((prev) =>
       prev.map((item) =>
         item._id === id
-          ? {
-              ...item,
-              quantity: item.quantity > 1 ? item.quantity - 1 : 1,
-            }
-          : item,
-      ),
+          ? { ...item, quantity: item.quantity > 1 ? item.quantity - 1 : 1 }
+          : item
+      )
     );
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem("shopverse_cart");
   };
 
   const totalPrice = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
-    0,
+    0
   );
 
   return (

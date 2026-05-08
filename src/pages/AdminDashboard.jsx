@@ -274,6 +274,28 @@ function AdminDashboard() {
                 ? "Update Product"
                 : "Add Product"}
           </button>
+          {editingProductId && (
+  <button
+    type="button"
+    onClick={() => {
+      setEditingProductId(null);
+
+      setFormData({
+        name: "",
+        description: "",
+        price: "",
+        oldPrice: "",
+        category: "",
+        image: "",
+        stock: "",
+        featured: true,
+      });
+    }}
+    className="mt-3 w-full rounded-2xl border border-slate-300 px-5 py-4 font-bold text-slate-700 hover:bg-slate-50"
+  >
+    Cancel Edit
+  </button>
+)}
         </form>
 
         <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">

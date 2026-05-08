@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import toast from "react-hot-toast";
 
 import api from "../services/api";
@@ -6,16 +6,14 @@ import api from "../services/api";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("shopverse_token"));
-
-  useEffect(() => {
+  const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("shopverse_user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem("shopverse_token");
+  });
 
   const register = async (formData) => {
     const { data } = await api.post("/auth/register", formData);

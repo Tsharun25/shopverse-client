@@ -6,21 +6,19 @@ const CartContext = createContext(null);
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("shopverse_cart");
+    const clearCart = () => {
+      setCartItems([]);
+    };
 
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem(
-      "shopverse_cart",
-      JSON.stringify(cartItems)
-    );
+    localStorage.setItem("shopverse_cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
   const addToCart = (product) => {
-    const existingProduct = cartItems.find(
-      (item) => item._id === product._id
-    );
+    const existingProduct = cartItems.find((item) => item._id === product._id);
 
     if (existingProduct) {
       setCartItems((prev) =>
@@ -30,8 +28,8 @@ export function CartProvider({ children }) {
                 ...item,
                 quantity: item.quantity + 1,
               }
-            : item
-        )
+            : item,
+        ),
       );
     } else {
       setCartItems((prev) => [
@@ -47,9 +45,7 @@ export function CartProvider({ children }) {
   };
 
   const removeFromCart = (id) => {
-    setCartItems((prev) =>
-      prev.filter((item) => item._id !== id)
-    );
+    setCartItems((prev) => prev.filter((item) => item._id !== id));
 
     toast.success("Removed from cart");
   };
@@ -62,8 +58,8 @@ export function CartProvider({ children }) {
               ...item,
               quantity: item.quantity + 1,
             }
-          : item
-      )
+          : item,
+      ),
     );
   };
 
@@ -73,19 +69,16 @@ export function CartProvider({ children }) {
         item._id === id
           ? {
               ...item,
-              quantity:
-                item.quantity > 1
-                  ? item.quantity - 1
-                  : 1,
+              quantity: item.quantity > 1 ? item.quantity - 1 : 1,
             }
-          : item
-      )
+          : item,
+      ),
     );
   };
 
   const totalPrice = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
-    0
+    0,
   );
 
   return (
@@ -97,6 +90,7 @@ export function CartProvider({ children }) {
         increaseQuantity,
         decreaseQuantity,
         totalPrice,
+        clearCart,
       }}
     >
       {children}

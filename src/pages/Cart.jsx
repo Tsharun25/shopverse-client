@@ -1,6 +1,6 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
-
 import { useCart } from "../context/CartContext";
+import { Link } from "react-router-dom";
 
 function Cart() {
   const {
@@ -91,18 +91,19 @@ function Cart() {
             </h2>
 
             <div className="mt-8 flex items-center justify-between text-lg">
-              <span className="font-semibold text-slate-500">
-                Total
-              </span>
+              <span className="font-semibold text-slate-500">Total</span>
 
               <span className="text-3xl font-black text-slate-950">
                 ${totalPrice}
               </span>
             </div>
 
-            <button className="mt-8 w-full rounded-2xl bg-slate-950 px-5 py-4 font-bold text-white hover:bg-slate-800">
+            <Link
+              to="/checkout"
+              className="mt-8 block w-full rounded-2xl bg-slate-950 px-5 py-4 text-center font-bold text-white hover:bg-slate-800"
+            >
               Checkout
-            </button>
+            </Link>
           </div>
         </div>
       )}

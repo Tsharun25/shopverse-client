@@ -82,6 +82,19 @@ function AdminDashboard() {
     }
   };
 
+  const handleUpdateOrderStatus = async (orderId, status) => {
+    try {
+      await api.patch(`/orders/${orderId}/status`, {
+        status,
+      });
+
+      toast.success("Order status updated");
+      fetchOrders();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Status update failed");
+    }
+  };
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -321,9 +334,19 @@ function AdminDashboard() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold capitalize text-slate-700">
-                      {order.status}
-                    </span>
+                    <select
+                      value={order.status}
+                      onChange={(event) =>
+                        handleUpdateOrderStatus(order._id, event.target.value)
+                      }
+                      className="rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-bold capitalize text-slate-700 outline-none focus:border-slate-950"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
 
                     <span className="rounded-full bg-slate-950 px-4 py-2 text-sm font-bold text-white">
                       {order.paymentMethod === "cash_on_delivery"

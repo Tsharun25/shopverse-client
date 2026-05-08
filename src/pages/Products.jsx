@@ -1,43 +1,46 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, Star } from "lucide-react";
 
 import { useProducts } from "../context/ProductContext";
 import { useCart } from "../context/CartContext";
-import { useEffect, useMemo, useRef, useState } from "react";
 
 function Products() {
   const { products, loading } = useProducts();
   const { addToCart } = useCart();
 
+  const searchRef = useRef(null);
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const searchRef = useRef(null);
+  const [sort, setSort] = useState("newest");
 
   useEffect(() => {
     searchRef.current?.focus();
   }, []);
 
   const categories = useMemo(() => {
-    const uniqueCategories = [
-      "All",
-      ...new Set(products.map((product) => product.category)),
-    ];
-
-    return uniqueCategories;
+    return ["All", ...new Set(products.map((product) => product.category))];
   }, [products]);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(search.toLowerCase());
+    return [...products]
+      .filter((product) => {
+        const matchesSearch = product.name
+          .toLowerCase()
+          .includes(search.toLowerCase());
 
-      const matchesCategory =
-        category === "All" ? true : product.category === category;
+        const matchesCategory =
+          category === "All" ? true : product.category === category;
 
-      return matchesSearch && matchesCategory;
-    });
-  }, [products, search, category]);
+        return matchesSearch && matchesCategory;
+      })
+      .sort((a, b) => {
+        if (sort === "low") return a.price - b.price;
+        if (sort === "high") return b.price - a.price;
+        return 0;
+      });
+  }, [products, search, category, sort]);
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-14">
@@ -75,8 +78,20 @@ function Products() {
             className="rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-slate-950"
           >
             {categories.map((item) => (
-              <option key={item}>{item}</option>
+              <option key={item} value={item}>
+                {item === "All" ? "All Categories" : item}
+              </option>
             ))}
+          </select>
+
+          <select
+            value={sort}
+            onChange={(event) => setSort(event.target.value)}
+            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-slate-950"
+          >
+            <option value="newest">Newest</option>
+            <option value="low">Price: Low to High</option>
+            <option value="high">Price: High to Low</option>
           </select>
         </div>
       </div>

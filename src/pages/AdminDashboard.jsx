@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { DollarSign, Package, ShoppingCart, Trash2, Users } from "lucide-react";
 
@@ -11,6 +11,8 @@ function AdminDashboard() {
   const { products, fetchProducts } = useProducts();
 
   const [loading, setLoading] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -66,8 +68,28 @@ function AdminDashboard() {
     }
   };
 
+  const fetchOrders = async () => {
+    try {
+      setOrdersLoading(true);
+
+      const { data } = await api.get("/orders");
+
+      setOrders(data.orders || []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to load orders");
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
   const handleDeleteProduct = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?",
+    );
 
     if (!confirmDelete) return;
 
@@ -98,8 +120,16 @@ function AdminDashboard() {
 
       <section className="mt-8 grid gap-6 md:grid-cols-4">
         <AdminCard icon={<DollarSign />} title="Revenue" value="$0" />
-        <AdminCard icon={<ShoppingCart />} title="Orders" value="0" />
-        <AdminCard icon={<Package />} title="Products" value={products.length} />
+        <AdminCard
+          icon={<ShoppingCart />}
+          title="Orders"
+          value={orders.length}
+        />
+        <AdminCard
+          icon={<Package />}
+          title="Products"
+          value={products.length}
+        />
         <AdminCard icon={<Users />} title="Customers" value="1" />
       </section>
 
@@ -198,9 +228,7 @@ function AdminDashboard() {
         </form>
 
         <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-black text-slate-950">
-            Product List
-          </h2>
+          <h2 className="text-2xl font-black text-slate-950">Product List</h2>
 
           <div className="mt-6 space-y-4">
             {products.length === 0 ? (
@@ -241,6 +269,72 @@ function AdminDashboard() {
               ))
             )}
           </div>
+        </div>
+      </section>
+
+      <section className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-black text-slate-950">
+              Recent Orders
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Latest customer orders from the store.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={fetchOrders}
+            className="rounded-full border border-slate-300 px-5 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
+          >
+            Refresh
+          </button>
+        </div>
+
+        <div className="mt-6 space-y-4">
+          {ordersLoading ? (
+            <p className="font-bold text-slate-500">Loading orders...</p>
+          ) : orders.length === 0 ? (
+            <p className="font-bold text-slate-500">No orders found.</p>
+          ) : (
+            orders.slice(0, 5).map((order) => (
+              <div
+                key={order._id}
+                className="rounded-2xl border border-slate-200 p-4"
+              >
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-sm font-bold text-slate-400">
+                      #{order._id.slice(-8).toUpperCase()}
+                    </p>
+
+                    <h3 className="mt-1 font-black text-slate-950">
+                      {order.user?.name ||
+                        order.shippingAddress?.name ||
+                        "Customer"}
+                    </h3>
+
+                    <p className="mt-1 text-sm text-slate-500">
+                      {order.items?.length || 0} item(s) · ${order.totalPrice}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold capitalize text-slate-700">
+                      {order.status}
+                    </span>
+
+                    <span className="rounded-full bg-slate-950 px-4 py-2 text-sm font-bold text-white">
+                      {order.paymentMethod === "cash_on_delivery"
+                        ? "COD"
+                        : "Card"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </section>
     </main>

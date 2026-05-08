@@ -113,22 +113,22 @@ Password: 123456
 ### Products
 ![Products](./public/screenshots/products.png)
 
-### Products
+### Product Details
 ![Product Details](./public/screenshots/productDetails.png)
 
-### Products
+### Cart
 ![Cart](./public/screenshots/cart.png)
 
-### Products
+### Checkout
 ![Checkout](./public/screenshots/checkout.png)
 
-### Products
+### User Dashboard
 ![User Dashboard](./public/screenshots/userdashboard.png)
 
-### Products
+### Admin dashboard
 ![Admin dashboard](./public/screenshots/AdminDashboard.png)
 
-### Products
+### Orders page
 ![Orders page](./public/screenshots/orders.png)
 ---
 

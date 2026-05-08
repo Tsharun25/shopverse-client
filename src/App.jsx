@@ -11,6 +11,7 @@ import Cart from "./pages/Cart";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Products from "./pages/Products";
 import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
 
 function App() {
   return (
@@ -23,14 +24,21 @@ function App() {
         <Route path="products/:id" element={<ProductDetails />} />
         <Route path="cart" element={<Cart />} />
         <Route
-  path="checkout"
-  element={
-    <ProtectedRoute>
-      <Checkout />
-    </ProtectedRoute>
-  }
-/>
-        
+          path="checkout"
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="orders"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="dashboard"

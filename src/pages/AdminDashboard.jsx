@@ -12,6 +12,7 @@ function AdminDashboard() {
 
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState([]);
+  const [editingProductId, setEditingProductId] = useState(null);
   const [ordersLoading, setOrdersLoading] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -40,14 +41,20 @@ function AdminDashboard() {
     try {
       setLoading(true);
 
-      await api.post("/products", {
+      const payload = {
         ...formData,
         price: Number(formData.price),
         oldPrice: Number(formData.oldPrice || 0),
         stock: Number(formData.stock || 0),
-      });
+      };
 
-      toast.success("Product created successfully");
+      if (editingProductId) {
+        await api.put(`/products/${editingProductId}`, payload);
+        toast.success("Product updated successfully");
+      } else {
+        await api.post("/products", payload);
+        toast.success("Product created successfully");
+      }
 
       setFormData({
         name: "",
@@ -60,9 +67,10 @@ function AdminDashboard() {
         featured: true,
       });
 
+      setEditingProductId(null);
       fetchProducts();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Product create failed");
+      toast.error(error.response?.data?.message || "Product save failed");
     } finally {
       setLoading(false);
     }
@@ -115,6 +123,26 @@ function AdminDashboard() {
     }
   };
 
+  const handleEditProduct = (product) => {
+    setEditingProductId(product._id);
+
+    setFormData({
+      name: product.name || "",
+      description: product.description || "",
+      price: product.price || "",
+      oldPrice: product.oldPrice || "",
+      category: product.category || "",
+      image: product.image || "",
+      stock: product.stock || "",
+      featured: product.featured || false,
+    });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <main className="mx-auto max-w-7xl px-6 py-12">
       <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-xl">
@@ -151,7 +179,9 @@ function AdminDashboard() {
           onSubmit={handleCreateProduct}
           className="h-fit rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm"
         >
-          <h2 className="text-2xl font-black text-slate-950">Add Product</h2>
+          <h2 className="text-2xl font-black text-slate-950">
+            {editingProductId ? "Edit Product" : "Add Product"}
+          </h2>
 
           <div className="mt-6 space-y-4">
             <Input
@@ -236,7 +266,13 @@ function AdminDashboard() {
             disabled={loading}
             className="mt-6 w-full rounded-2xl bg-slate-950 px-5 py-4 font-bold text-white hover:bg-slate-800 disabled:opacity-60"
           >
-            {loading ? "Adding..." : "Add Product"}
+            {loading
+              ? editingProductId
+                ? "Updating..."
+                : "Adding..."
+              : editingProductId
+                ? "Update Product"
+                : "Add Product"}
           </button>
         </form>
 
@@ -271,7 +307,13 @@ function AdminDashboard() {
                       ${product.price} · Stock: {product.stock}
                     </p>
                   </div>
-
+                  <button
+                    type="button"
+                    onClick={() => handleEditProduct(product)}
+                    className="rounded-full border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                  >
+                    Edit
+                  </button>
                   <button
                     onClick={() => handleDeleteProduct(product._id)}
                     className="grid h-11 w-11 place-items-center rounded-full border border-red-200 text-red-500 hover:bg-red-50"
